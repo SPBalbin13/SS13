@@ -200,43 +200,6 @@
     box-shadow:0 6px 22px rgba(155,127,212,.32);
   }
 
-  /* ADD FORM */
-  .add-name-section {
-    width:100%; max-width:480px; margin:2.6rem auto 0;
-    animation:fadeUp 1.5s ease both 2.1s;
-  }
-  .add-name-section h3 {
-    text-align:center;
-    font-family:'Cormorant Garamond',serif;
-    font-size:1.1rem; font-weight:300; font-style:italic;
-    color:var(--lav2); margin-bottom:1rem; letter-spacing:.05em;
-  }
-  .add-name-row { display:flex; gap:.6rem; }
-  .add-name-input {
-    flex:1; background:var(--glass);
-    border:1px solid var(--glass-border);
-    border-radius:999px; padding:.65rem 1.3rem;
-    font-family:'Jost',sans-serif; font-size:.9rem; font-weight:300;
-    color:var(--white); outline:none;
-    transition:border-color .25s,box-shadow .25s;
-    backdrop-filter:blur(10px);
-  }
-  .add-name-input::placeholder { color:rgba(195,174,232,.3); }
-  .add-name-input:focus {
-    border-color:var(--lav3);
-    box-shadow:0 0 0 3px rgba(155,127,212,.15);
-  }
-  .add-name-btn {
-    background:linear-gradient(135deg,var(--lav4),var(--lav3));
-    border:none; border-radius:999px; padding:.65rem 1.5rem;
-    font-family:'Jost',sans-serif; font-size:.85rem; font-weight:400;
-    color:var(--white); cursor:pointer;
-    transition:all .25s; letter-spacing:.06em;
-    box-shadow:0 4px 18px rgba(106,79,163,.35);
-  }
-  .add-name-btn:hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(106,79,163,.5); filter:brightness(1.1); }
-  .add-name-btn:active { transform:scale(.97); }
-
   /* PETALS */
   .petal {
     position:fixed; pointer-events:none; z-index:3;
@@ -306,18 +269,8 @@
   <div class="divider"><span>✦ Mujeres extraordinarias ✦</span></div>
 
   <div class="names-section">
-    <h2>Escribe tu nombre y únete a la celebración 💜</h2>
-    <div class="names-grid" id="names-grid">
-      <p class="empty-hint" id="empty-hint">Aún no hay nombres… ¡sé la primera! 🌸</p>
-    </div>
-  </div>
-
-  <div class="add-name-section">
-    <h3>✦ ¿Cuál es tu nombre? ✦</h3>
-    <div class="add-name-row">
-      <input class="add-name-input" id="name-input" type="text" placeholder="Escribe tu nombre aquí…" maxlength="30">
-      <button class="add-name-btn" id="add-btn">¡Soy yo!</button>
-    </div>
+    <h2>Haz clic en tu nombre para celebrarte ✨</h2>
+    <div class="names-grid" id="names-grid"></div>
   </div>
 
   <footer>Día Internacional de la Mujer &nbsp;·&nbsp; Con amor</footer>
@@ -325,7 +278,15 @@
 
 <script>
 /* ── DATA ── */
-let NAMES = [];
+let NAMES = [
+  "Maricela","Soledad","Roxana","Erika","Fiorella","Yenefir",
+  "Karin","Gina","Joana","Sullin","Diana","Sandy",
+  "Rocio","Ximena","Fiorela","Reymi","Melani","Wendy",
+  "Jehymmi","Dina","Claudia","Rosario G.","Rosario R.","Mily",
+  "Blanca","Arely","Elisa","Asuncion","María","Ysabel",
+  "Patricia","Martha","Melissa","Luisa","Susan","Paola",
+  "Doris","Stephanie","Jheidy"
+];
 const MESSAGE = "A cada mujer que ilumina el mundo con su fuerza, su ternura y su valentía... Hoy y siempre, gracias por existir. Su presencia transforma todo lo que toca. Son la luz que guía, el amor que sostiene y la valentía que inspira a seguir adelante.";
 
 /* ── STARS ── */
@@ -354,63 +315,22 @@ const MESSAGE = "A cada mujer que ilumina el mundo con su fuerza, su ternura y s
   addEventListener('resize',resize);resize();draw();
 })();
 
-/* ── MUSIC (Web Audio API) ── */
-let audioCtx=null,musicPlaying=false;
-const musicBtn=document.getElementById('music-btn');
+/* ── MUSIC – music/music V1.mp3 ── */
+const audio = new Audio('music/music V1.mp3');
+audio.loop = true;
+audio.volume = 0.7;
 
-function buildMusic(){
-  audioCtx=new(window.AudioContext||window.webkitAudioContext)();
-  const master=audioCtx.createGain();
-  master.gain.value=0.11;
-  master.connect(audioCtx.destination);
+const musicBtn = document.getElementById('music-btn');
+let musicPlaying = false;
 
-  const scale=[261.63,293.66,329.63,392.00,440.00,523.25,587.33,659.25];
-  const melody=[4,2,0,2,4,5,4,2,5,4,2,0,2,4,2,0,3,5,4,2,4,5,7,5];
-  let step=0;
-
-  function playChord(freqs,dur){
-    freqs.forEach(freq=>{
-      const osc=audioCtx.createOscillator(),g=audioCtx.createGain();
-      osc.type='sine';osc.frequency.value=freq;
-      g.gain.setValueAtTime(0,audioCtx.currentTime);
-      g.gain.linearRampToValueAtTime(.055,audioCtx.currentTime+.4);
-      g.gain.linearRampToValueAtTime(0,audioCtx.currentTime+dur-.15);
-      osc.connect(g);g.connect(master);osc.start();osc.stop(audioCtx.currentTime+dur);
-    });
-  }
-
-  function playNote(){
-    if(!musicPlaying)return;
-    const freq=scale[melody[step%melody.length]];
-    const osc=audioCtx.createOscillator(),env=audioCtx.createGain();
-    osc.type='triangle';osc.frequency.value=freq*2;
-    env.gain.setValueAtTime(0,audioCtx.currentTime);
-    env.gain.linearRampToValueAtTime(.10,audioCtx.currentTime+.04);
-    env.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+1.6);
-    osc.connect(env);env.connect(master);osc.start();osc.stop(audioCtx.currentTime+1.7);
-    step++;
-    setTimeout(playNote,600+Math.random()*220);
-  }
-
-  function playPad(){
-    if(!musicPlaying)return;
-    playChord([261.63,329.63,392.00],3.6);
-    setTimeout(()=>{if(musicPlaying)playChord([293.66,369.99,440.00],3.6);},4000);
-    setTimeout(playPad,8200);
-  }
-
-  playNote();setTimeout(playPad,800);
-}
-
-musicBtn.addEventListener('click',()=>{
-  if(!musicPlaying){
-    musicPlaying=true;
-    if(!audioCtx)buildMusic();
-    else audioCtx.resume();
+musicBtn.addEventListener('click', () => {
+  if (!musicPlaying) {
+    audio.play();
+    musicPlaying = true;
     musicBtn.classList.add('playing');
   } else {
-    musicPlaying=false;
-    audioCtx&&audioCtx.suspend();
+    audio.pause();
+    musicPlaying = false;
     musicBtn.classList.remove('playing');
   }
 });
@@ -564,22 +484,6 @@ function createPill(name,isNew=false){
 
 NAMES.forEach(n=>grid.appendChild(createPill(n)));
 
-/* ── ADD NAME ── */
-const nameInput=document.getElementById('name-input');
-const addBtn=document.getElementById('add-btn');
-const emptyHint=document.getElementById('empty-hint');
-
-function addName(){
-  const val=nameInput.value.trim();if(!val)return;
-  if(emptyHint)emptyHint.remove();
-  NAMES.push(val);
-  grid.appendChild(createPill(val,true));
-  const r=addBtn.getBoundingClientRect();
-  launchFirework(r.left+r.width/2,r.top,val);
-  nameInput.value='';nameInput.focus();
-}
-addBtn.addEventListener('click',addName);
-nameInput.addEventListener('keydown',e=>{if(e.key==='Enter')addName();});
 
 /* ── PETALS ── */
 const PETALS=['🌸','🌷','✨','💜','🤍','💫','🌺'];
