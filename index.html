@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Un homenaje para Miss Reymi">
+<meta name="theme-color" content="#D6336C">
+<title>Happy Teachers' Day</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8D%8E%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Poppins:wght@300;400;500;600&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pink-blush:#FBEAF2;
+    --pink-soft:#F6D6E8;
+    --lavender:#E6DBF9;
+    --lavender-soft:#F1EBFC;
+    --rose-deep:#D6336C;
+    --rose-deeper:#A82655;
+    --gold:#D9A566;
+    --white:#FFFDFB;
+    --ink:#4A3B4D;
+    --ink-soft:#7A6B7E;
+    --board:#2E4A3F;
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html{ scroll-behavior:smooth; }
+
+  body{
+    font-family:'Poppins', sans-serif;
+    color:var(--ink);
+    background:var(--pink-blush);
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; scroll-behavior:auto !important; }
+  }
+
+  h1,h2,h3, .display{ font-family:'Playfair Display', serif; }
+  ::selection{ background:var(--rose-deep); color:var(--white); }
+
+  a:focus-visible, button:focus-visible{
+    outline:3px solid var(--rose-deep);
+    outline-offset:3px;
+    border-radius:6px;
+  }
+
+  /* ---------- barra de progreso tipo regla escolar ---------- */
+  .regla-progreso{
+    position:fixed; top:0; left:0; width:100%; height:7px; z-index:200;
+    background:
+      repeating-linear-gradient(90deg, rgba(74,59,77,.16) 0 1px, transparent 1px 40px),
+      repeating-linear-gradient(90deg, rgba(74,59,77,.09) 0 1px, transparent 1px 8px),
+      var(--white);
+    box-shadow:0 2px 10px -4px rgba(74,59,77,.3);
+  }
+  .regla-fill{
+    position:absolute; top:0; left:0; height:100%; width:0%;
+    background:linear-gradient(90deg, var(--rose-deep), var(--rose-deeper));
+    transition:width .08s linear;
+  }
+  .regla-lapiz{
+    position:absolute; top:-11px; left:0%; transform:translateX(-50%);
+    transition:left .08s linear;
+    filter:drop-shadow(0 3px 4px rgba(74,59,77,.35));
+  }
+
+  /* ---------- fondo degradado animado ---------- */
+  .bg-animated{
+    position:fixed; inset:0; z-index:-2;
+    background:linear-gradient(120deg, var(--pink-blush), var(--lavender-soft), var(--pink-soft), var(--lavender));
+    background-size:400% 400%;
+    animation:gradientShift 22s ease infinite;
+  }
+  @keyframes gradientShift{
+    0%{background-position:0% 50%;}
+    50%{background-position:100% 50%;}
+    100%{background-position:0% 50%;}
+  }
+
+  .bg-motas{ position:fixed; inset:0; z-index:-1; pointer-events:none; overflow:hidden; }
+  .mota{
+    position:absolute; border-radius:50%;
+    background:radial-gradient(circle at 30% 30%, rgba(255,255,255,.9), rgba(214,51,108,.15));
+    filter:blur(1px);
+    animation:float 14s ease-in-out infinite;
+  }
+  @keyframes float{
+    0%,100%{ transform:translateY(0) translateX(0); }
+    50%{ transform:translateY(-40px) translateX(20px); }
+  }
+
+  section{ position:relative; padding:min(12vw,120px) 6vw; }
+
+  .eyebrow{
+    letter-spacing:.28em; text-transform:uppercase; font-size:.72rem;
+    color:var(--rose-deep); font-weight:600; margin-bottom:18px;
+    display:inline-flex; align-items:center; gap:10px;
+  }
+  .eyebrow::before{ content:""; width:26px; height:1px; background:var(--rose-deep); display:inline-block; }
+
+  /* ---------- utilidades de aparición al hacer scroll ---------- */
+  .reveal{
+    opacity:0; transform:translateY(26px);
+    transition:opacity .8s cubic-bezier(.2,.7,.2,1), transform .8s cubic-bezier(.2,.7,.2,1);
+  }
+  .reveal.en-vista{ opacity:1; transform:translateY(0); }
+  .reveal-grupo .reveal:nth-child(1){ transition-delay:.05s; }
+  .reveal-grupo .reveal:nth-child(2){ transition-delay:.15s; }
+  .reveal-grupo .reveal:nth-child(3){ transition-delay:.25s; }
+  .reveal-grupo .reveal:nth-child(4){ transition-delay:.35s; }
+  .reveal-grupo .reveal:nth-child(5){ transition-delay:.45s; }
+  .reveal-grupo .reveal:nth-child(6){ transition-delay:.55s; }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    min-height:100svh; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; text-align:center; padding:8vw 6vw;
+  }
+  .hero-icons{ display:flex; gap:28px; margin-bottom:34px; }
+  .hero-icons svg{ width:34px; height:34px; opacity:0; animation:aparecerIcono .8s ease forwards, bob 5s ease-in-out 1s infinite; }
+  .hero-icons .i1{ animation-delay:.1s, 1s; }
+  .hero-icons .i2{ animation-delay:.3s, 1.2s; }
+  .hero-icons .i3{ animation-delay:.5s, 1.4s; }
+  @keyframes aparecerIcono{ from{ opacity:0; transform:translateY(14px) scale(.8);} to{ opacity:.85; transform:translateY(0) scale(1);} }
+  @keyframes bob{ 0%,100%{ transform:translateY(0) rotate(-2deg);} 50%{ transform:translateY(-10px) rotate(2deg);} }
+
+  .hero h1{
+    font-size:clamp(2.6rem, 8vw, 5.6rem); font-weight:600; line-height:1.05;
+    color:var(--rose-deeper); max-width:18ch;
+    opacity:0; transform:translateY(18px);
+    animation:entrar .9s .55s cubic-bezier(.2,.8,.2,1) forwards;
+  }
+  .hero h1 em{ font-style:italic; color:var(--rose-deep); }
+
+  .hero .rol{
+    margin-top:14px; font-family:'Caveat', cursive; font-size:clamp(1.5rem,3vw,2rem);
+    color:var(--gold); letter-spacing:.02em;
+    opacity:0; transform:translateY(18px);
+    animation:entrar .9s .75s cubic-bezier(.2,.8,.2,1) forwards;
+  }
+
+  .hero p{
+    margin-top:22px; font-size:clamp(1rem, 1.6vw, 1.25rem);
+    color:var(--ink-soft); max-width:46ch; font-weight:300;
+    opacity:0; transform:translateY(18px);
+    animation:entrar .9s .95s cubic-bezier(.2,.8,.2,1) forwards;
+  }
+  @keyframes entrar{ to{ opacity:1; transform:translateY(0); } }
+
+  .btn-ver{
+    margin-top:48px; background:var(--rose-deep); color:var(--white); border:none;
+    padding:16px 38px; border-radius:100px; font-size:.95rem; letter-spacing:.03em;
+    font-weight:500; cursor:pointer; box-shadow:0 14px 30px -10px rgba(168,38,85,.55);
+    transition:transform .35s ease, box-shadow .35s ease, background .35s ease;
+    opacity:0; transform:translateY(18px);
+    animation:entrar .9s 1.15s cubic-bezier(.2,.8,.2,1) forwards;
+  }
+  .btn-ver:hover{ transform:translateY(-3px); box-shadow:0 20px 36px -10px rgba(168,38,85,.6); background:var(--rose-deeper); }
+  .btn-ver svg{ margin-left:8px; vertical-align:-3px; animation:downnudge 1.8s ease-in-out infinite; }
+  @keyframes downnudge{ 0%,100%{transform:translateY(0);} 50%{transform:translateY(5px);} }
+
+  /* ---------- CARTA ---------- */
+  .carta-wrap{ display:flex; justify-content:center; }
+  .carta{
+    position:relative; background:var(--white); max-width:720px; width:100%;
+    padding:min(8vw,64px) min(7vw,58px); border-radius:6px;
+    box-shadow:0 30px 60px -25px rgba(74,59,77,.25), 0 2px 0 rgba(214,51,108,.08) inset;
+    background-image:radial-gradient(rgba(74,59,77,.035) 1px, transparent 1px);
+    background-size:14px 14px;
+  }
+  .carta::before{
+    content:""; position:absolute; top:0; left:0; right:0; height:6px;
+    background:linear-gradient(90deg, var(--rose-deep), var(--gold), var(--lavender));
+    border-radius:6px 6px 0 0;
+  }
+  .carta::after{
+    content:""; position:absolute; right:0; bottom:0; width:44px; height:44px;
+    background:linear-gradient(135deg, transparent 50%, var(--pink-blush) 50%);
+    box-shadow:-4px -4px 10px -4px rgba(74,59,77,.18);
+    border-radius:0 0 6px 0;
+  }
+  .sello{
+    position:absolute; top:-26px; right:38px; width:64px; height:64px; border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, var(--rose-deep), var(--rose-deeper));
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 10px 18px -6px rgba(168,38,85,.5), inset 0 -4px 8px rgba(0,0,0,.2), inset 0 3px 5px rgba(255,255,255,.25);
+    color:var(--white); font-family:'Playfair Display', serif; font-style:italic; font-size:1.5rem;
+  }
+  .carta h2{ font-size:clamp(1.7rem,3.4vw,2.3rem); color:var(--rose-deeper); margin-bottom:26px; }
+  .carta-texto{ font-size:1.05rem; line-height:1.9; color:var(--ink); min-height:clamp(240px,46vw,340px); }
+  .carta-texto .cursor{
+    display:inline-block; width:2px; height:1.05em; background:var(--rose-deep);
+    margin-left:2px; vertical-align:-2px; animation:blink 1s steps(2) infinite;
+  }
+  @keyframes blink{ 50%{ opacity:0; } }
+  .firma{ margin-top:30px; font-family:'Caveat', cursive; font-size:1.9rem; color:var(--rose-deep); text-align:right; }
+
+  /* ---------- DIVISOR ---------- */
+  .divisor{
+    display:flex; align-items:center; justify-content:center; gap:14px;
+    max-width:280px; margin:0 auto; padding:0 6vw 0;
+  }
+  .divisor::before, .divisor::after{
+    content:""; flex:1; height:1px;
+    background:linear-gradient(to right, transparent, var(--gold), transparent);
+  }
+  .divisor svg{ width:18px; height:18px; color:var(--gold); flex-shrink:0; }
+
+  /* ---------- JARDÍN DE PALABRAS ---------- */
+  .jardin{ text-align:center; }
+  .jardin .chips{
+    display:flex; flex-wrap:wrap; justify-content:center; gap:14px 16px;
+    max-width:780px; margin:0 auto;
+  }
+  .chip{
+    font-family:'Playfair Display', serif; font-style:italic;
+    font-size:clamp(1rem,2vw,1.25rem); color:var(--rose-deeper);
+    background:linear-gradient(135deg, #fff, var(--pink-blush));
+    border:1px solid var(--pink-soft);
+    padding:14px 26px; border-radius:100px;
+    box-shadow:0 10px 20px -12px rgba(74,59,77,.3);
+    transition:transform .35s ease, box-shadow .35s ease, background .35s ease;
+    cursor:default;
+  }
+  .chip span{
+    display:block; font-family:'Poppins', sans-serif; font-style:normal;
+    font-size:.62rem; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--ink-soft); margin-top:4px;
+  }
+  .chip:hover{
+    transform:translateY(-6px) scale(1.05);
+    box-shadow:0 18px 30px -14px rgba(74,59,77,.4);
+    background:linear-gradient(135deg, var(--pink-soft), var(--white));
+  }
+
+  /* ---------- VOCACIÓN DE SERVICIO ---------- */
+  .vocacion{ text-align:center; }
+  .vocacion-card{
+    max-width:760px; margin:0 auto;
+    background:linear-gradient(160deg, var(--rose-deep), var(--rose-deeper));
+    color:#FCE9EF; border-radius:20px;
+    padding:clamp(3rem,6vw,4.5rem) clamp(1.8rem,5vw,3.5rem);
+    position:relative; overflow:hidden;
+    box-shadow:0 30px 70px -25px rgba(168,38,85,.45);
+  }
+  .vocacion-card::before{
+    content:'"'; position:absolute; top:-1.4rem; left:1.2rem;
+    font-family:'Playfair Display', serif; font-size:9rem;
+    color:rgba(255,255,255,.08); line-height:1; pointer-events:none;
+  }
+  .vocacion-card .kicker{
+    font-family:'Caveat', cursive; font-size:1.5rem; color:var(--gold);
+    display:block; margin-bottom:.6rem; position:relative;
+  }
+  .vocacion-card h3{
+    font-size:clamp(1.8rem,4.6vw,2.6rem); margin:0 0 1.1rem;
+    color:#fff; font-weight:700; position:relative;
+  }
+  .vocacion-card p{
+    font-size:clamp(1rem,2vw,1.15rem); line-height:1.85; max-width:520px;
+    margin:0 auto; color:rgba(255,247,250,.92); position:relative; font-weight:300;
+  }
+  .heart-row{ margin-top:1.8rem; display:flex; justify-content:center; gap:.5rem; position:relative; }
+  .heart-row svg{ width:16px; height:16px; color:var(--gold); animation:heartbeat 2.6s ease-in-out infinite; }
+  .heart-row svg:nth-child(2){ animation-delay:.2s; }
+  .heart-row svg:nth-child(3){ animation-delay:.4s; }
+  @keyframes heartbeat{ 0%,100%{ transform:scale(1); opacity:.7; } 50%{ transform:scale(1.25); opacity:1; } }
+
+  /* ---------- GALERÍA ---------- */
+  .galeria-head{ text-align:center; margin-bottom:56px; }
+  .galeria-head h2{ font-size:clamp(1.9rem,4vw,2.8rem); color:var(--rose-deeper); }
+  .galeria-head p{ color:var(--ink-soft); margin-top:12px; font-weight:300; }
+
+  .galeria-grid{
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr));
+    gap:26px; max-width:1100px; margin:0 auto;
+  }
+  .foto{
+    position:relative; aspect-ratio:4/5; border-radius:18px; overflow:hidden;
+    background:linear-gradient(155deg, var(--lavender), var(--pink-soft));
+    box-shadow:0 20px 40px -22px rgba(74,59,77,.35);
+    cursor:pointer; border:none; padding:0; width:100%; display:block; text-align:left;
+  }
+  .foto img{
+    width:100%; height:100%; object-fit:cover; display:block;
+    transition:transform .6s cubic-bezier(.2,.8,.2,1);
+  }
+  .foto:hover img, .foto:focus-visible img{ transform:scale(1.12) rotate(-1deg); }
+  .foto .placeholder{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    flex-direction:column; gap:10px; color:var(--rose-deeper); opacity:.55;
+    font-size:.8rem; text-align:center; padding:14px;
+  }
+  .foto .placeholder svg{ width:36px; height:36px; }
+  .foto::after{
+    content:""; position:absolute; inset:0;
+    background:linear-gradient(to top, rgba(74,59,77,.55), transparent 60%);
+    opacity:.55; transition:opacity .4s ease;
+  }
+  .foto:hover::after, .foto:focus-visible::after{ opacity:.85; }
+  .foto .caption{
+    position:absolute; left:16px; bottom:14px; color:var(--white);
+    font-family:'Caveat', cursive; font-size:1.3rem; z-index:2;
+  }
+  .foto .ampliar{
+    position:absolute; top:12px; right:12px; width:30px; height:30px; border-radius:50%;
+    background:rgba(255,255,255,.85); display:flex; align-items:center; justify-content:center;
+    opacity:0; transform:scale(.7); transition:all .3s ease; z-index:2;
+  }
+  .foto:hover .ampliar, .foto:focus-visible .ampliar{ opacity:1; transform:scale(1); }
+  .foto .ampliar svg{ width:15px; height:15px; color:var(--rose-deeper); }
+
+  /* ---------- FRASES (pizarra) ---------- */
+  .pizarra-section{ padding-top:min(10vw,100px); padding-bottom:min(10vw,110px); }
+  .pizarra{
+    max-width:820px; margin:0 auto; background:var(--board); border-radius:16px;
+    padding:min(8vw,64px) min(6vw,50px); position:relative;
+    box-shadow:0 30px 60px -25px rgba(20,35,28,.5), inset 0 0 0 10px #24382f, inset 0 0 0 14px #4c3a2a;
+    text-align:center; overflow:hidden;
+  }
+  .pizarra::before{
+    content:""; position:absolute; inset:14px; border:1px dashed rgba(255,255,255,.08);
+    border-radius:6px; pointer-events:none;
+  }
+  .polvo-tiza{
+    position:absolute; inset:0; pointer-events:none; opacity:.5;
+    background-image:radial-gradient(rgba(255,255,255,.06) 1px, transparent 1px);
+    background-size:5px 5px;
+  }
+  .frase{
+    font-family:'Caveat', cursive; color:#F5F0E6; font-size:clamp(1.5rem, 3.4vw, 2.3rem);
+    line-height:1.5; min-height:5.2em; display:flex; align-items:center; justify-content:center;
+    opacity:0; transition:opacity .7s ease; position:relative; z-index:1;
+  }
+  .frase.activa{ opacity:1; }
+  .frase-autor{
+    display:block; font-family:'Poppins', sans-serif; font-size:.78rem;
+    letter-spacing:.18em; text-transform:uppercase; color:var(--gold); margin-top:14px;
+  }
+  .tiza-linea{ display:block; margin:6px auto 0; height:14px; width:130px; overflow:visible; }
+  .tiza-linea path{
+    fill:none; stroke:var(--gold); stroke-width:2; stroke-linecap:round;
+    stroke-dasharray:180; stroke-dashoffset:180;
+  }
+  .tiza-linea.dibujar path{ animation:dibujarTiza 1s ease forwards .1s; }
+  @keyframes dibujarTiza{ to{ stroke-dashoffset:0; } }
+
+  .puntos{ display:flex; gap:8px; justify-content:center; margin-top:30px; position:relative; z-index:1; }
+  .punto{ width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,.25); transition:background .3s ease, transform .3s ease; }
+  .punto.on{ background:var(--gold); transform:scale(1.25); }
+
+  /* ---------- CIERRE ---------- */
+  .cierre{ text-align:center; }
+  .cierre h2{ font-size:clamp(2rem,5vw,3rem); color:var(--rose-deeper); margin-bottom:6px; }
+  .cierre .thanks-en{
+    font-family:'Caveat', cursive; font-size:clamp(2.1rem,6vw,3.2rem);
+    color:var(--rose-deep); margin:6px 0 18px;
+  }
+  .cierre .de{ font-style:italic; color:var(--ink-soft); font-weight:300; }
+
+  footer{ text-align:center; padding:60px 6vw 100px; color:var(--ink-soft); font-size:.85rem; }
+  footer .corazon{ color:var(--rose-deep); }
+
+  /* ---------- BOTONES FLOTANTES ---------- */
+  .flotantes{ position:fixed; right:22px; bottom:22px; display:flex; flex-direction:column; align-items:flex-end; gap:14px; z-index:50; }
+  .btn-musica{
+    width:52px; height:52px; border-radius:50%; background:var(--white); border:1px solid var(--pink-soft);
+    box-shadow:0 12px 24px -10px rgba(74,59,77,.35); display:flex; align-items:center; justify-content:center;
+    cursor:pointer; color:var(--rose-deep); transition:transform .3s ease;
+  }
+  .btn-musica:hover{ transform:scale(1.07); }
+  .btn-musica svg{ width:22px; height:22px; }
+  .btn-musica.sonando{ animation:pulso 1.6s ease-in-out infinite; }
+  @keyframes pulso{ 0%,100%{ box-shadow:0 12px 24px -10px rgba(214,51,108,.35);} 50%{ box-shadow:0 12px 28px -6px rgba(214,51,108,.6);} }
+
+  .btn-gracias{
+    background:var(--rose-deep); color:var(--white); border:none; padding:15px 24px; border-radius:100px;
+    font-weight:500; font-size:.9rem; cursor:pointer; box-shadow:0 14px 28px -10px rgba(168,38,85,.55);
+    transition:transform .3s ease, background .3s ease; white-space:nowrap;
+  }
+  .btn-gracias:hover{ transform:translateY(-2px); background:var(--rose-deeper); }
+
+  .toast{
+    position:fixed; left:50%; bottom:100px; transform:translateX(-50%) translateY(20px);
+    background:var(--white); color:var(--rose-deeper); padding:18px 30px; border-radius:14px;
+    font-family:'Playfair Display', serif; font-style:italic; font-size:1.05rem;
+    box-shadow:0 20px 40px -15px rgba(74,59,77,.4); opacity:0; pointer-events:none;
+    transition:all .45s cubic-bezier(.2,.8,.2,1); z-index:60; max-width:min(80vw,360px); text-align:center;
+  }
+  .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); pointer-events:auto; }
+
+  /* ---------- LIGHTBOX ---------- */
+  .lightbox{
+    position:fixed; inset:0; z-index:90; background:rgba(74,59,77,.72);
+    display:flex; align-items:center; justify-content:center; padding:6vw;
+    opacity:0; pointer-events:none; transition:opacity .35s ease;
+  }
+  .lightbox.show{ opacity:1; pointer-events:auto; }
+  .lightbox-caja{
+    background:var(--white); border-radius:18px; padding:16px; max-width:min(600px,90vw);
+    width:100%; box-shadow:0 40px 80px -30px rgba(0,0,0,.5);
+    transform:scale(.92); transition:transform .35s cubic-bezier(.2,.8,.2,1);
+    text-align:center;
+  }
+  .lightbox.show .lightbox-caja{ transform:scale(1); }
+  .lightbox-caja img{ width:100%; border-radius:12px; display:block; max-height:60vh; object-fit:cover; }
+  .lightbox-caja .lightbox-vacio{ padding:60px 20px; color:var(--rose-deeper); font-size:.95rem; }
+  .lightbox-caja .lightbox-caption{ margin-top:14px; font-family:'Caveat', cursive; font-size:1.5rem; color:var(--rose-deep); }
+  .lightbox-cerrar{
+    margin-top:14px; background:none; border:1px solid var(--pink-soft); color:var(--ink-soft);
+    padding:9px 20px; border-radius:100px; cursor:pointer; font-size:.85rem; transition:all .25s ease;
+  }
+  .lightbox-cerrar:hover{ background:var(--pink-blush); color:var(--rose-deeper); }
+
+  @media (max-width:640px){
+    section{ padding:80px 6vw; }
+    .sello{ right:20px; top:-22px; width:54px; height:54px; font-size:1.2rem; }
+    .flotantes{ right:16px; bottom:16px; }
+    .btn-gracias{ padding:13px 18px; font-size:.82rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="regla-progreso">
+  <div class="regla-fill" id="reglaFill"></div>
+  <svg class="regla-lapiz" id="reglaLapiz" width="20" height="20" viewBox="0 0 24 24" fill="none">
+    <path d="M4 20l1-5L16 4l4 4L9 19l-5 1z" fill="#D9A566" stroke="#4A3B4D" stroke-width="1"/>
+  </svg>
+</div>
+
+<div class="bg-animated"></div>
+<div class="bg-motas" id="motas"></div>
+
+<!-- ================= HERO ================= -->
+<section class="hero" id="inicio">
+  <div class="hero-icons" aria-hidden="true">
+    <svg class="i1" viewBox="0 0 24 24" fill="none" stroke="#D6336C" stroke-width="1.6"><path d="M12 3c-3 0-5 2.5-5 5.5 0 3 2 4.5 2 7.5h6c0-3 2-4.5 2-7.5C17 5.5 15 3 12 3z"/><path d="M10 19h4M11 21.5h2"/></svg>
+    <svg class="i2" viewBox="0 0 24 24" fill="none" stroke="#D9A566" stroke-width="1.6"><path d="M4 5.5C4 4.7 4.7 4 5.5 4H12v16H5.5A1.5 1.5 0 0 1 4 18.5v-13z"/><path d="M20 5.5C20 4.7 19.3 4 18.5 4H12v16h6.5a1.5 1.5 0 0 0 1.5-1.5v-13z"/></svg>
+    <svg class="i3" viewBox="0 0 24 24" fill="none" stroke="#D6336C" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 2.5 15.5 0 18M12 3c-2.5 2.5-2.5 15.5 0 18"/></svg>
+  </div>
+
+  <span class="eyebrow">Happy Teachers' Day</span>
+  <h1>Feliz día, <em>Reymi</em></h1>
+  
+  <p>Un pequeño rincón para ti Miss Reymi, con toda la admiración y el cariño que se merece quien enseña con el corazón.</p>
+
+  <button class="btn-ver" onclick="document.getElementById('carta').scrollIntoView({behavior:'smooth'})">
+    Ver homenaje
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M6 13l6 6 6-6"/></svg>
+  </button>
+</section>
+
+<!-- ================= CARTA ================= -->
+<section id="carta">
+  <div class="carta-wrap">
+    <div class="carta">
+      <div class="sello">R</div>
+      <span class="eyebrow">Una carta para ti</span>
+      <h2>Miss Reymi</h2>
+      <div class="carta-texto" id="texto-carta"></div>
+      <p class="firma">Con todo mi cariño y admiración</p>
+    </div>
+  </div>
+</section>
+
+<div class="divisor reveal" aria-hidden="true">
+  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+</div>
+
+<!-- ================= JARDÍN DE PALABRAS ================= -->
+<section class="jardin">
+  <div class="galeria-head reveal">
+    <span class="eyebrow" style="justify-content:center;">In her own words</span>
+    <h2>Lo que admiro de ti</h2>
+  </div>
+  <div class="chips reveal-grupo">
+    <div class="chip reveal">Kindness<span>Bondad</span></div>
+    <div class="chip reveal">Patience<span>Paciencia</span></div>
+    <div class="chip reveal">Dedication<span>Dedicación</span></div>
+    <div class="chip reveal">Warmth<span>Calidez</span></div>
+    <div class="chip reveal">Courage<span>Valentía</span></div>
+    <div class="chip reveal">Service<span>Servicio</span></div>
+  </div>
+</section>
+
+<!-- ================= VOCACIÓN DE SERVICIO ================= -->
+<section class="vocacion">
+  <div class="vocacion-card reveal">
+    <span class="kicker">Tu cualidad más grande</span>
+    <h3>Vocación de servicio</h3>
+    <p>Enseñar puede ser un trabajo. Servir con el corazón, como lo haces, es una vocación. Esa entrega silenciosa, esa disposición a dar un poco más de lo que se pide, es lo que te hace tan especial y lo que más admiro de ti.</p>
+    <div class="heart-row" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+    </div>
+  </div>
+</section>
+
+<!-- ================= GALERÍA ================= -->
+<section id="galeria">
+  <div class="galeria-head reveal">
+    <span class="eyebrow" style="justify-content:center;">Recuerdos</span>
+    <h2>Momentos para atesorar</h2>
+    <p>Haga clic en cualquier recuadro para verlo en grande. Reemplace cada uno con sus propias fotografías de Miss Reymi.</p>
+  </div>
+
+  <div class="galeria-grid reveal-grupo">
+    <!-- Para usar su propia foto: agregue <img src="foto1.jpg" alt="descripción"> dentro del .foto y elimine el .placeholder -->
+    <button class="foto reveal" data-caption="Enseñando con pasión" aria-label="Ampliar foto: enseñando con pasión">
+      <img src="https:" alt="Miss Reymi enseñando con pasión" loading="lazy">
+      <span class="ampliar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></span>
+      <span class="caption">Enseñando con pasión</span>
+    </button>
+    <button class="foto reveal" data-caption="Paciencia sin límites" aria-label="Ampliar foto: paciencia sin límites">
+      <img src="https:" alt="Miss Reymi paciencia sin limites" loading="lazy">
+      <span class="ampliar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></span>
+      <span class="caption">Paciencia sin límites</span>
+    </button>
+    <button class="foto reveal" data-caption="Una sonrisa cada día" aria-label="Ampliar foto: una sonrisa cada día">
+      <img src="https:" alt="Miss Reymi una sonrisa cada día" loading="lazy">
+      <span class="ampliar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></span>
+      <span class="caption">Una sonrisa cada día</span>
+    </button>
+    <button class="foto reveal" data-caption="Huellas que quedan" aria-label="Ampliar foto: huellas que quedan">
+      <img src="https:" alt="Miss Reymi huellas que quedan" loading="lazy">
+      <span class="ampliar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></span>
+      <span class="caption">Huellas que quedan</span>
+    </button>
+  </div>
+</section>
+
+<!-- ================= FRASES / PIZARRA ================= -->
+<section class="pizarra-section">
+  <div class="galeria-head reveal">
+    <span class="eyebrow" style="justify-content:center;">Palabras que inspiran</span>
+    <h2 style="color:var(--rose-deeper);">Lecciones que se quedan</h2>
+  </div>
+  <div class="pizarra reveal">
+    <div class="polvo-tiza" aria-hidden="true"></div>
+    <div id="frase-actual" class="frase activa"></div>
+    <svg class="tiza-linea dibujar" id="tizaLinea" viewBox="0 0 130 14"><path d="M4 8c15-6 30 6 45 0s30-8 45-1 25 4 32-1"/></svg>
+    <div class="puntos" id="puntos"></div>
+  </div>
+</section>
+
+<!-- ================= CIERRE ================= -->
+<section class="cierre reveal">
+  <span class="eyebrow" style="justify-content:center;">Feliz día, Miss Reymi</span>
+  <h2>Gracias por tanto</h2>
+  <p class="thanks-en">Thank you, miss.</p>
+  <p class="de">Con admiración y todo mi cariño</p>
+</section>
+
+<footer>
+  Hecho con <span class="corazon">♥</span> para Miss Reymi — Happy Teacher's Day
+</footer>
+
+<!-- ================= LIGHTBOX ================= -->
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Foto ampliada">
+  <div class="lightbox-caja" id="lightboxCaja"></div>
+</div>
+
+<!-- ================= FLOTANTES ================= -->
+<div class="flotantes">
+  <div class="toast" id="toast" role="status" aria-live="polite">Gracias por creer en cada una de sus alumnas y alumnos, Miss Reymi. Este día es para ti. ✨</div>
+  <button class="btn-musica" id="btnMusica" aria-label="Reproducir música de fondo">
+    <svg id="iconoMusica" viewBox="0 0 24 24" fill="currentColor"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+  </button>
+  <button class="btn-gracias" id="btnGracias">Gracias, Miss Reymi ❤️</button>
+</div>
+
+<!-- Coloque aquí su archivo de música, por ejemplo: musica-fondo.mp3, en la misma carpeta que este HTML -->
+<audio id="audioFondo" loop>
+  <source src="musica-fondo.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+  // ---------- barra de progreso tipo regla ----------
+  const reglaFill = document.getElementById('reglaFill');
+  const reglaLapiz = document.getElementById('reglaLapiz');
+  function actualizarProgreso(){
+    const alto = document.documentElement.scrollHeight - window.innerHeight;
+    const porcentaje = alto > 0 ? (window.scrollY / alto) * 100 : 0;
+    reglaFill.style.width = porcentaje + '%';
+    reglaLapiz.style.left = porcentaje + '%';
+  }
+  window.addEventListener('scroll', actualizarProgreso, { passive:true });
+  window.addEventListener('resize', actualizarProgreso);
+  actualizarProgreso();
+
+  // ---------- motas decorativas de fondo ----------
+  (function(){
+    const cont = document.getElementById('motas');
+    const total = 14;
+    for(let i=0;i<total;i++){
+      const m = document.createElement('div');
+      m.className = 'mota';
+      const size = 6 + Math.random()*18;
+      m.style.width = size+'px';
+      m.style.height = size+'px';
+      m.style.left = Math.random()*100+'vw';
+      m.style.top = Math.random()*100+'vh';
+      m.style.animationDuration = (10+Math.random()*10)+'s';
+      m.style.animationDelay = (Math.random()*6)+'s';
+      cont.appendChild(m);
+    }
+  })();
+
+  // ---------- aparición de elementos al hacer scroll ----------
+  const revelables = document.querySelectorAll('.reveal');
+  const observerReveal = new IntersectionObserver((entradas)=>{
+    entradas.forEach(entrada=>{
+      if(entrada.isIntersecting){
+        entrada.target.classList.add('en-vista');
+        observerReveal.unobserve(entrada.target);
+      }
+    });
+  }, { threshold:0.18 });
+  revelables.forEach(el => observerReveal.observe(el));
+
+  // ---------- efecto de escritura para la carta ----------
+  const mensaje = `Hay profesoras que enseñan un idioma, y hay profesoras que, al hacerlo, enseñan algo mucho más valioso: a creer en uno mismo.
+
+En cada clase de inglés no solo compartes gramática y vocabulario, sino también paciencia, dedicación y un cariño sincero. Con tu ejemplo demuestras que enseñar es mucho más que transmitir conocimientos: es inspirar y dejar huellas en quienes tienen la fortuna de aprender contigo.
+
+Hoy, en tu día, quiero decirte "Thank you" en el idioma que tan bien enseñas, y "gracias" en el idioma del corazón, que es el que mejor habla ti.`;
+
+  const contenedorTexto = document.getElementById('texto-carta');
+  let escrito = false;
+
+  function efectoEscritura(texto, contenedor){
+    contenedor.innerHTML = '';
+    const cursor = document.createElement('span');
+    cursor.className = 'cursor';
+    let i = 0;
+    const velocidad = 22;
+    function paso(){
+      if(i <= texto.length){
+        contenedor.textContent = texto.slice(0, i);
+        contenedor.appendChild(cursor);
+        i++;
+        setTimeout(paso, velocidad);
+      } else {
+        cursor.remove();
+      }
+    }
+    paso();
+  }
+
+  const observerCarta = new IntersectionObserver((entradas)=>{
+    entradas.forEach(entrada=>{
+      if(entrada.isIntersecting && !escrito){
+        escrito = true;
+        efectoEscritura(mensaje, contenedorTexto);
+      }
+    });
+  }, { threshold:0.3 });
+  observerCarta.observe(document.getElementById('carta'));
+
+  // ---------- carrusel de frases (pizarra) ----------
+  const frases = [
+    { texto:"“Enseñar no es llenar un vaso, es encender una llama.”", autor:"W. B. Yeats" },
+    { texto:"“Un maestro trabaja para el hoy, pero construye el mañana.”", autor:"Anónimo" },
+    { texto:"“Un nuevo idioma es una nueva vida.”", autor:"Proverbio persa" },
+    { texto:"“Detrás de cada alumno exitoso, hay una maestra que creyó primero.”", autor:"Anónimo" },
+    { texto:"“Gracias por enseñarnos no solo lecciones, sino también a soñar.”", autor:"Anónimo" }
+  ];
+
+  const fraseEl = document.getElementById('frase-actual');
+  const puntosEl = document.getElementById('puntos');
+  const tizaLinea = document.getElementById('tizaLinea');
+  let indiceFrase = 0;
+
+  frases.forEach((_, idx)=>{
+    const p = document.createElement('span');
+    p.className = 'punto' + (idx===0 ? ' on' : '');
+    puntosEl.appendChild(p);
+  });
+
+  function mostrarFrase(idx){
+    fraseEl.classList.remove('activa');
+    tizaLinea.classList.remove('dibujar');
+    setTimeout(()=>{
+      fraseEl.innerHTML = frases[idx].texto + '<span class="frase-autor">' + frases[idx].autor + '</span>';
+      fraseEl.classList.add('activa');
+      void tizaLinea.offsetWidth;
+      tizaLinea.classList.add('dibujar');
+      [...puntosEl.children].forEach((p,i)=> p.classList.toggle('on', i===idx));
+    }, 350);
+  }
+  mostrarFrase(0);
+  setInterval(()=>{
+    indiceFrase = (indiceFrase+1) % frases.length;
+    mostrarFrase(indiceFrase);
+  }, 5000);
+
+  // ---------- música de fondo ----------
+  const audio = document.getElementById('audioFondo');
+  const btnMusica = document.getElementById('btnMusica');
+  let sonando = false;
+
+  btnMusica.addEventListener('click', ()=>{
+    if(!sonando){
+      audio.play().then(()=>{
+        sonando = true;
+        btnMusica.classList.add('sonando');
+        btnMusica.setAttribute('aria-label','Pausar música de fondo');
+      }).catch(()=>{
+        mostrarToast('Agregue un archivo "musica-fondo.mp3" junto a este HTML para activar la música 🎵');
+      });
+    } else {
+      audio.pause();
+      sonando = false;
+      btnMusica.classList.remove('sonando');
+      btnMusica.setAttribute('aria-label','Reproducir música de fondo');
+    }
+  });
+
+  // ---------- botón flotante "Gracias, Miss Reymi" ----------
+  const toast = document.getElementById('toast');
+  let toastTimeout;
+  function mostrarToast(texto){
+    if(texto) toast.textContent = texto;
+    toast.classList.add('show');
+    clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(()=> toast.classList.remove('show'), 3800);
+  }
+  document.getElementById('btnGracias').addEventListener('click', ()=>{
+    mostrarToast('Gracias por creer en cada una de sus alumnas y alumnos, Miss Reymi. Este día es para usted. ✨');
+  });
+
+  // ---------- lightbox de la galería ----------
+  const lightbox = document.getElementById('lightbox');
+  const lightboxCaja = document.getElementById('lightboxCaja');
+
+  function abrirLightbox(foto){
+    const img = foto.querySelector('img');
+    const caption = foto.dataset.caption || '';
+    if(img){
+      lightboxCaja.innerHTML = `<img src="${img.src}" alt="${img.alt || caption}"><p class="lightbox-caption">${caption}</p><button class="lightbox-cerrar" id="cerrarLB">Cerrar</button>`;
+    } else {
+      lightboxCaja.innerHTML = `<div class="lightbox-vacio">📷 Agregue una fotografía a este recuadro para verla aquí en grande.</div><button class="lightbox-cerrar" id="cerrarLB">Cerrar</button>`;
+    }
+    lightbox.classList.add('show');
+    document.getElementById('cerrarLB').addEventListener('click', cerrarLightbox);
+  }
+  function cerrarLightbox(){ lightbox.classList.remove('show'); }
+
+  document.querySelectorAll('.foto').forEach(foto=>{
+    foto.addEventListener('click', ()=> abrirLightbox(foto));
+  });
+  lightbox.addEventListener('click', (e)=>{ if(e.target === lightbox) cerrarLightbox(); });
+  document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') cerrarLightbox(); });
+</script>
+
+</body>
+</html>
