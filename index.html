@@ -2,185 +2,164 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Escanear zona · Control de Recreos</title>
-<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Escáner QR — Control de Recreos</title>
 <style>
-  :root{
-    --bg:#06121f;--panel:#102a43;--line:#ffffff14;--text:#fff;--muted:#8296ab;
-    --primary:#1e5aa8;--primary2:#102a43;--accent:#c9a227;--danger:#dc2626;
-  }
+  :root{--bg:#0b1120;--panel:#111827;--line:#1f2937;--primary:#1995AD;--ice:#A1D6E2;--text:#f1f1f2;--muted:#9aa4b2;--danger:#ef4444;--success:#22c55e}
   *{box-sizing:border-box}
-  body{margin:0;min-height:100vh;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--text);display:flex;flex-direction:column}
-  button{cursor:pointer;border:0;font:inherit}
-  .head{min-height:68px;display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:var(--panel);border-bottom:1px solid var(--line)}
-  .head h1{margin:0;font-size:17px}.head small{display:block;color:var(--muted);margin-top:3px;font-weight:400}
-  .btn{padding:10px 15px;border-radius:10px;font-weight:700;background:#fff;color:var(--bg)}
-  .btn.primary{background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;box-shadow:0 8px 20px #1e5aa855}
-  .btn.danger{background:#fef2f2;color:#b91c1c}
-  .btn:disabled{opacity:.5;cursor:not-allowed}
-  .stage{position:relative;flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#000;min-height:60vh}
-  video{width:100%;height:100%;object-fit:cover}
-  canvas{display:none}
-  .overlay{position:absolute;width:min(72vw,320px);height:min(72vw,320px);border-radius:22px;box-shadow:0 0 0 9999px rgba(0,0,0,.45);pointer-events:none}
-  .corners{position:absolute;width:min(72vw,320px);height:min(72vw,320px);border-radius:22px;pointer-events:none}
-  .corners:before,.corners:after{content:"";position:absolute;inset:0;border-radius:22px;border:4px solid transparent}
-  .corners:before{border-top-color:var(--accent);border-left-color:var(--accent)}
-  .corners:after{border-right-color:var(--primary);border-bottom-color:var(--primary)}
-  .status{position:absolute;top:16px;left:50%;transform:translateX(-50%);background:#06121fdd;border:1px solid var(--line);padding:8px 13px;border-radius:999px;font-size:12px;z-index:2;text-align:center;max-width:88%}
-  .hint{position:absolute;bottom:22px;left:16px;right:16px;text-align:center;background:#06121fcc;padding:12px 16px;border-radius:14px;color:#e2e8f0;font-size:13px}
-  .foot{padding:14px 18px;background:var(--panel);display:flex;gap:10px;justify-content:center;padding-bottom:calc(14px + env(safe-area-inset-bottom))}
-  .foot .btn{min-width:130px}
-  .center-msg{margin:auto;padding:32px 24px;max-width:420px;text-align:center}
-  .center-msg .icon{font-size:40px;margin-bottom:12px}
-  .center-msg h2{margin:0 0 8px;font-size:19px}
-  .center-msg p{margin:0 0 20px;color:var(--muted);font-size:14px;line-height:1.5}
+  body{margin:0;min-height:100vh;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;display:flex;align-items:center;justify-content:center;padding:18px}
+  .card{width:100%;max-width:460px;background:var(--panel);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 20px 55px rgba(0,0,0,.4)}
+  .head{padding:18px 20px;border-bottom:1px solid var(--line)}
+  .head h1{margin:0;font-size:17px}
+  .head p{margin:6px 0 0;color:var(--muted);font-size:13px}
+  .viewport{position:relative;background:#000;aspect-ratio:1/1}
+  video{width:100%;height:100%;object-fit:cover;display:block}
+  .frame{position:absolute;inset:12%;border:3px solid var(--ice);border-radius:16px;box-shadow:0 0 0 999px rgba(0,0,0,.35);pointer-events:none}
+  .frame.ok{border-color:var(--success)}
+  .body{padding:18px 20px}
+  #status{margin:0 0 14px;font-size:14px;color:var(--muted);min-height:20px}
+  #status.err{color:var(--danger)}
+  #status.ok{color:var(--success)}
+  button{width:100%;padding:13px;border-radius:11px;border:0;font-weight:700;font-size:14px;cursor:pointer;background:var(--primary);color:#fff}
+  button.secondary{background:transparent;border:1px solid var(--line);color:var(--text);margin-top:10px}
+  .hidden{display:none!important}
+  .spin{width:26px;height:26px;border:3px solid #ffffff33;border-top-color:var(--primary);border-radius:50%;animation:sp .8s linear infinite;margin:0 auto 12px}
+  @keyframes sp{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
+  <div class="card">
+    <div class="head">
+      <h1>📷 Escáner de zona</h1>
+      <p>Apunta la cámara al código QR pegado en la zona del recreo.</p>
+    </div>
+    <div class="viewport">
+      <video id="video" playsinline muted autoplay></video>
+      <div class="frame" id="frame"></div>
+    </div>
+    <div class="body">
+      <p id="status">Solicitando acceso a la cámara…</p>
+      <button id="btnRetry" class="secondary hidden" onclick="iniciarCamara()">↻ Reintentar</button>
+      <button id="btnManual" class="secondary hidden" onclick="escaneoManual()">⌨ Ingresar código manualmente</button>
+    </div>
+  </div>
 
-<div class="head">
-  <div><h1>Escanear zona</h1><small>Apunta al código QR de tu zona de recreo</small></div>
-</div>
-
-<div id="stage" class="stage">
-  <div id="status" class="status">Solicitando cámara…</div>
-  <video id="video" autoplay playsinline muted></video>
-  <div class="overlay"></div>
-  <div class="corners"></div>
-  <div class="hint">Mantén el QR dentro del recuadro. No cierres esta pestaña.</div>
-  <canvas id="canvas"></canvas>
-</div>
-
-<div class="foot">
-  <button class="btn" id="switchBtn" onclick="switchCamera()">↻ Cambiar cámara</button>
-  <button class="btn danger" onclick="cancelar()">Cancelar</button>
-</div>
-
+<canvas id="canvas" class="hidden"></canvas>
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 <script>
 // ============================================================
-// Config: URL de retorno (?return=https://script.google.com/.../exec)
+// Parámetros que llegan desde la app de Apps Script:
+//   ?return=<URL /exec de la Web App>   (a dónde volver)
+//   ?token=<token firmado del docente>  (identidad; solo se reenvía tal cual)
 // ============================================================
 const params = new URLSearchParams(location.search);
 const RETURN_URL = params.get('return') || '';
+const TOKEN = params.get('token') || '';
 
-// Medida de seguridad básica: solo redirigimos de vuelta a dominios de
-// Google Apps Script. Si el parámetro "return" viene manipulado o vacío,
-// avisamos en vez de redirigir a cualquier sitio (evita open-redirect).
-function returnUrlEsValida(url){
-  try{
-    const u = new URL(url);
-    return u.protocol === 'https:' && /(^|\.)script\.google(usercontent)?\.com$/.test(u.hostname);
-  }catch(e){ return false; }
+const video = document.getElementById('video');
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d', { willReadFrequently: true });
+const statusEl = document.getElementById('status');
+const frameEl = document.getElementById('frame');
+const btnRetry = document.getElementById('btnRetry');
+const btnManual = document.getElementById('btnManual');
+
+let stream = null;
+let detenido = false; // evita procesar más de un QR / redirigir dos veces
+let rafId = null;
+
+function setStatus(msg, tipo){
+  statusEl.textContent = msg;
+  statusEl.className = tipo || '';
 }
 
-let stream = null, running = false, raf = 0, detected = false, detector = null, facing = 'environment';
-
-function setStatus(t){ const s=document.getElementById('status'); if(s) s.textContent = t; }
-
-function showBlockingMessage(icon, title, body, showRetry){
-  document.getElementById('stage').innerHTML = `
-    <div class="center-msg">
-      <div class="icon">${icon}</div>
-      <h2>${title}</h2>
-      <p>${body}</p>
-      ${showRetry ? '<button class="btn primary" onclick="location.reload()">Reintentar</button>' : ''}
-    </div>`;
-  document.getElementById('switchBtn').style.display = 'none';
+function validarParametros(){
+  if(!RETURN_URL){
+    setStatus('Falta el parámetro "return" en el enlace. Abre la cámara desde la app de Control de Recreos, no directamente esta página.', 'err');
+    btnRetry.classList.add('hidden');
+    btnManual.classList.add('hidden');
+    return false;
+  }
+  return true;
 }
 
-async function start(){
-  if(!RETURN_URL || !returnUrlEsValida(RETURN_URL)){
-    showBlockingMessage('⚠️', 'Enlace incompleto', 'Esta página debe abrirse desde el botón "Abrir cámara y escanear" de Control de Recreos, no directamente.', false);
-    return;
-  }
-  if(!window.isSecureContext){
-    showBlockingMessage('🔒', 'Se requiere HTTPS', 'La cámara solo funciona sobre una conexión segura (https://). Verifica la URL de GitHub Pages.', false);
-    return;
-  }
-  const video = document.getElementById('video');
+async function iniciarCamara(){
+  if(!validarParametros()) return;
+  detenido = false;
+  btnRetry.classList.add('hidden');
+  frameEl.classList.remove('ok');
+  setStatus('Solicitando acceso a la cámara…');
   try{
+    // Cámara trasera si el dispositivo la tiene (celulares); facingMode es solo
+    // una preferencia, así que en laptops cae de vuelta a la webcam normal.
     stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: { ideal: facing }, width: { ideal: 1280 }, height: { ideal: 720 } },
+      video: { facingMode: { ideal: 'environment' } },
       audio: false
     });
     video.srcObject = stream;
     await video.play();
-    setStatus('Cámara activa · buscando QR…');
-    running = true; detected = false;
-    if('BarcodeDetector' in window){
-      try{ detector = new BarcodeDetector({formats:['qr_code']}); }catch(e){ detector = null; }
-    }
-    scanFrame();
+    setStatus('Enfoca el código QR de la zona…');
+    btnManual.classList.remove('hidden');
+    rafId = requestAnimationFrame(tick);
   }catch(err){
     console.error(err);
-    const reason = err && err.name === 'NotAllowedError'
-      ? 'Debes permitir el acceso a la cámara para poder escanear tu zona. Revisa los permisos del sitio en tu navegador y vuelve a intentar.'
-      : err && err.name === 'NotFoundError'
-        ? 'No se encontró una cámara disponible en este dispositivo.'
-        : 'No se pudo acceder a la cámara: ' + (err && err.message ? err.message : err);
-    showBlockingMessage('📷', 'Cámara no disponible', reason, true);
+    let msg = 'No se pudo acceder a la cámara.';
+    if(err.name === 'NotAllowedError') msg = 'Permiso de cámara denegado. Autorízalo en el navegador e inténtalo de nuevo.';
+    else if(err.name === 'NotFoundError') msg = 'No se encontró ninguna cámara en este dispositivo.';
+    else if(location.protocol !== 'https:') msg = 'Esta página debe abrirse por HTTPS para usar la cámara.';
+    setStatus(msg, 'err');
+    btnRetry.classList.remove('hidden');
+    btnManual.classList.remove('hidden');
   }
 }
 
-async function scanFrame(){
-  if(!running || detected) return;
-  const video = document.getElementById('video');
-  if(!video || video.readyState < 2){ raf = requestAnimationFrame(scanFrame); return; }
-  try{
-    if(detector){
-      const codes = await detector.detect(video);
-      if(codes && codes.length && codes[0].rawValue){ return onDetected(codes[0].rawValue); }
+function tick(){
+  if(detenido) return;
+  if(video.readyState === video.HAVE_ENOUGH_DATA){
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const code = jsQR(imageData.data, imageData.width, imageData.height, { inversionAttempts: 'dontInvert' });
+    if(code && code.data){
+      onDetectado(code.data);
+      return;
     }
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d', {willReadFrequently:true});
-    const w = video.videoWidth, h = video.videoHeight;
-    if(w && h){
-      canvas.width = w; canvas.height = h;
-      ctx.drawImage(video, 0, 0, w, h);
-      if(window.jsQR){
-        const image = ctx.getImageData(0, 0, w, h);
-        const code = window.jsQR(image.data, w, h, {inversionAttempts:'attemptBoth'});
-        if(code && code.data) return onDetected(code.data);
-      }
-    }
-  }catch(e){ console.debug('scanFrame', e); }
-  raf = requestAnimationFrame(scanFrame);
+  }
+  rafId = requestAnimationFrame(tick);
 }
 
-function stopStream(){
-  running = false;
-  if(raf) cancelAnimationFrame(raf);
-  raf = 0;
+function onDetectado(valor){
+  if(detenido) return;
+  detenido = true;
+  frameEl.classList.add('ok');
+  setStatus('✓ Código leído. Enviando…', 'ok');
+  detenerCamara();
+  redirigir(valor);
+}
+
+function detenerCamara(){
+  if(rafId) cancelAnimationFrame(rafId);
   if(stream){ stream.getTracks().forEach(t => t.stop()); stream = null; }
 }
 
-function onDetected(rawValue){
-  if(detected) return;
-  detected = true;
-  setStatus('QR detectado · redirigiendo…');
-  stopStream();
-  const sep = RETURN_URL.indexOf('?') > -1 ? '&' : '?';
-  location.href = RETURN_URL + sep + 'scanned=' + encodeURIComponent(rawValue);
+function redirigir(valorEscaneado){
+  const sep = RETURN_URL.includes('?') ? '&' : '?';
+  const url = `${RETURN_URL}${sep}scanned=${encodeURIComponent(valorEscaneado)}&token=${encodeURIComponent(TOKEN)}`;
+  location.href = url;
 }
 
-async function switchCamera(){
-  stopStream();
-  facing = (facing === 'environment') ? 'user' : 'environment';
-  await start();
-}
-
-function cancelar(){
-  stopStream();
-  if(RETURN_URL && returnUrlEsValida(RETURN_URL)){
-    location.href = RETURN_URL;
-  }else{
-    setStatus('Cancelado. Puedes cerrar esta pestaña.');
-    showBlockingMessage('✕', 'Escaneo cancelado', 'Puedes cerrar esta pestaña y volver a Control de Recreos.', false);
+function escaneoManual(){
+  if(!validarParametros()) return;
+  const codigo = prompt('Ingresa el código de la zona (por ejemplo: Z01):');
+  if(codigo && codigo.trim()){
+    detenerCamara();
+    redirigir(codigo.trim());
   }
 }
 
-start();
+window.addEventListener('pagehide', detenerCamara);
+iniciarCamara();
 </script>
 </body>
 </html>
